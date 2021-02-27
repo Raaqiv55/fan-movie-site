@@ -39,5 +39,21 @@ router.get('/movie/:id', (req, res, next)=> {
   })
 });
 
+router.post('/search', (req, res, next) => {
+  const userSearchTerm = encodeURI(req.body.movieSearch);
+  const cat = req.body.cat;
+  const moiveUrl = `${apiBaseUrl}/search/${cat}?query=${userSearchTerm}&api_key=${apiKey}`;
+  //res.send(moiveUrl);
+  request.get(moiveUrl, (error, response, movieData) => {
+    let parsedData = JSON.parse(movieData);
+    if(cat=='person'){
+      parsedData.results = parsedData.results[0].known_for;
+    }
+    res.render('index', {
+      parsedData: parsedData.results
+    });
+  });
+});
+
 module.exports = router;
 
